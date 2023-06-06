@@ -5,7 +5,9 @@ VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraovacEdi_OOP_NET", "GraovacEdi_OOP_NET\GraovacEdi_OOP_NET.csproj", "{113A0221-BF3D-440F-9F9D-70A53EE11BA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{52ABCAAB-894C-4F39-AAD4-B6E28C36F2DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{52ABCAAB-894C-4F39-AAD4-B6E28C36F2DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Graovac_WPF_PART", "Graovac_WPF_PART\Graovac_WPF_PART.csproj", "{BA201EEC-606B-4D04-8073-9F0F56C973CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{52ABCAAB-894C-4F39-AAD4-B6E28C36F2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52ABCAAB-894C-4F39-AAD4-B6E28C36F2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52ABCAAB-894C-4F39-AAD4-B6E28C36F2DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA201EEC-606B-4D04-8073-9F0F56C973CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA201EEC-606B-4D04-8073-9F0F56C973CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA201EEC-606B-4D04-8073-9F0F56C973CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA201EEC-606B-4D04-8073-9F0F56C973CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,7 @@ namespace DAL.RepoFactory
     internal class FileRepo : IRepo
     {
         private static string SETTINGS_PATH = Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName).Parent.FullName, "settings.txt");
+        private static string WPF_SETTINGS_PATH = Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName).Parent.FullName, "wpf_settings.txt");
         private static string FAVORITETEAM_PATH = Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName).Parent.FullName, "favorite_team.txt");
         private static string FAVORITEPLAYER_PATH = Path.Combine(Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName).Parent.FullName, "favorite_player.txt");
 
@@ -135,6 +136,56 @@ namespace DAL.RepoFactory
             return eventList;
         }
 
+        public List<NationalTeam> GetEnemyTeams()
+        {
+            JArray jsonMatchData = new JArray();
+            JArray jsonNationalsTeamsData = new JArray();
+            List<string> codeList = new List<string>();
+            List<NationalTeam> enemyTeamsList = new List<NationalTeam>();
+
+            if (GetWorldCup() == "Musko")
+            {
+                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/men/matches/country?fifa_code={GetFifaCode()}");
+                jsonNationalsTeamsData = FatchData("https://worldcup-vua.nullbit.hr/men/teams/results");
+            }
+            else
+            {
+                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/women/matches/country?fifa_code={GetFifaCode()}");
+                jsonNationalsTeamsData = FatchData("https://worldcup-vua.nullbit.hr/women/teams/results");
+            }
+
+            foreach (var match in jsonMatchData)
+            {
+                if ((match["home_team"]).Value<string>("code") == GetFifaCode())
+                {
+                    codeList.Add((match["away_team"]).Value<string>("code"));
+                }
+                else
+                {
+                    codeList.Add((match["home_team"]).Value<string>("code"));
+                }
+            }
+
+            foreach (var nationalteam in jsonNationalsTeamsData)
+            {
+                if (codeList.Contains(nationalteam.Value<String>("fifa_code")))
+                {
+                    enemyTeamsList.Add(new NationalTeam(
+                        nationalteam.Value<int>("id"),
+                        nationalteam.Value<string>("country"),
+                        nationalteam.Value<string>("alternate_name"),
+                        nationalteam.Value<string>("fifa_code"),
+                        nationalteam.Value<int>("group_id"),
+                        nationalteam.Value<string>("group_letter")[0]
+                        ));
+                }
+            }
+
+            return enemyTeamsList;
+
+
+        }
+
         public List<Visitors> GetVisitorsStatsData()
         {
             JArray jsonStatsData = new JArray();
@@ -160,6 +211,35 @@ namespace DAL.RepoFactory
             }
 
             return listVisitorsStats.OrderByDescending(visitor => visitor.VisitorNumber).ToList();
+        }
+
+        public string GetResults(NationalTeam homeTeam, NationalTeam awayTeam)
+        {
+            JArray jsonMatchData = new JArray();
+            List<Event> eventList = new List<Event>();
+            
+
+            if (GetWorldCup() == "Musko")
+            {
+                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/men/matches/country?fifa_code={homeTeam.FifaCode}");
+            }
+            else
+            {
+                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/women/matches/country?fifa_code={homeTeam.FifaCode}");
+            }
+            foreach (var match in jsonMatchData)
+            {
+                if ((match["away_team"]).Value<string>("code") == awayTeam.FifaCode)
+                {
+                    return $"{(match["home_team"]).Value<string>("goals")} : {(match["away_team"]).Value<string>("goals")}";
+                }
+                else if ((match["home_team"]).Value<string>("code") == awayTeam.FifaCode)
+                {
+                    return $"{(match["away_team"]).Value<string>("goals")} : {(match["home_team"]).Value<string>("goals")}";
+                }
+            }
+
+            return "0 : 0";
         }
 
         private List<Event> ValidEvent(JToken matchEvent)
@@ -198,7 +278,7 @@ namespace DAL.RepoFactory
 
         }
 
-        private string GetWorldCup()
+        public string GetWorldCup()
         {
             try
             {
@@ -221,7 +301,7 @@ namespace DAL.RepoFactory
             
         }
 
-        private string GetFifaCode()
+        public string GetFifaCode()
         {
             try
             {
@@ -244,6 +324,8 @@ namespace DAL.RepoFactory
             }
         }
 
+
+
         private JArray FatchData(string url)
         {
             try
@@ -259,6 +341,72 @@ namespace DAL.RepoFactory
                 return new JArray();
             }
         }
+
+        public int GetWidth()
+        {
+            try
+            {
+                if (File.Exists(WPF_SETTINGS_PATH))
+                {
+                    string[] settings = File.ReadAllLines(WPF_SETTINGS_PATH);
+                    if (settings.Length > 0)
+                    {
+                        string size = settings[0].Split(',')[2];
+                        if(size == "Manji")
+                        {
+                            return 400;
+                        }else if (size == "Srednji")
+                        {
+                            return 800;
+                        }
+                        else
+                        {
+                            return 999999;
+                        }
+                    }
+                }
+                throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return 0;
+            }
+        }
+
+        public int GetHeight()
+        {
+            try
+            {
+                if (File.Exists(WPF_SETTINGS_PATH))
+                {
+                    string[] settings = File.ReadAllLines(WPF_SETTINGS_PATH);
+                    if (settings.Length > 0)
+                    {
+                        string size = settings[0].Split(',')[2];
+                        if (size == "Manji")
+                        {
+                            return 400;
+                        }
+                        else if (size == "Srednji")
+                        {
+                            return 800;
+                        }
+                        else
+                        {
+                            return 999999;
+                        }
+                    }
+                }
+                throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return 0;
+            }
+        }
+
 
     }
 }

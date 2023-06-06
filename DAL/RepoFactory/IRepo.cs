@@ -14,9 +14,15 @@ namespace DAL.RepoFactory
         void SaveChosenNationalTeam(string team, string path);
         void SaveFavoritePlayes(List<string> players, string path);
         List<NationalTeam> GetNationalTeams();
+        List<NationalTeam> GetEnemyTeams();
         List <Player> GetPlayers();
         List<Event> GetPlayerStatsData();
         List<Visitors> GetVisitorsStatsData();
+        string GetResults(NationalTeam homeTeam, NationalTeam awayTeam);
         string[] GetFavoritePlayers();
+        string GetWorldCup();
+        string GetFifaCode();
+        int GetWidth();
+        int GetHeight();
     }
 }
