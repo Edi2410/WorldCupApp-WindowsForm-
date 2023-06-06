@@ -180,53 +180,84 @@ namespace DAL.RepoFactory
 
         public string[] GetFavoritePlayers()
         {
-            if (File.Exists(FAVORITEPLAYER_PATH))
+            try
             {
-                return File.ReadAllLines(FAVORITEPLAYER_PATH);     
+                if (File.Exists(FAVORITEPLAYER_PATH))
+                {
+                    return File.ReadAllLines(FAVORITEPLAYER_PATH);
 
+                }
+                MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
             }
-            MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
+            catch (FileNotFoundException) {
+                MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
 
         }
 
         private string GetWorldCup()
         {
-            if(File.Exists(SETTINGS_PATH))
+            try
             {
-                string[] settings = File.ReadAllLines(SETTINGS_PATH);
-                if (settings.Length > 0)
+                if (File.Exists(SETTINGS_PATH))
                 {
-                    string[] parts = settings[0].Split(',');
-                    string[] gender = parts[1].Split(' ');
-                    return gender[0];
+                    string[] settings = File.ReadAllLines(SETTINGS_PATH);
+                    if (settings.Length > 0)
+                    {
+                        string[] parts = settings[0].Split(',');
+                        string[] gender = parts[1].Split(' ');
+                        return gender[0];
+                    }
                 }
+                throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
             }
-            MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
+            catch (Exception) {
+                MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return "";
+            }
+            
         }
 
         private string GetFifaCode()
         {
-            if(File.Exists(FAVORITETEAM_PATH))
+            try
             {
-                string[] settings = File.ReadAllLines(FAVORITETEAM_PATH);
-                if (settings.Length > 0)
+                if (File.Exists(FAVORITETEAM_PATH))
                 {
-                    string[] parts = settings[0].Split('(');
-                    string[] gender = parts[1].Split(')');
-                    return gender[0];
+                    string[] settings = File.ReadAllLines(FAVORITETEAM_PATH);
+                    if (settings.Length > 0)
+                    {
+                        string[] parts = settings[0].Split('(');
+                        string[] gender = parts[1].Split(')');
+                        return gender[0];
+                    }
                 }
+                throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
             }
-            throw new FileNotFoundException("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju");
+            catch (Exception)
+            {
+                MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return "";
+            }
         }
 
         private JArray FatchData(string url)
         {
-            var client = new HttpClient();
-            var content = (client.GetAsync(url).Result).Content.ReadAsStringAsync().Result;
-            JArray jsonData = JArray.Parse(content);
-            return jsonData;
+            try
+            {
+                var client = new HttpClient();
+                var content = (client.GetAsync(url).Result).Content.ReadAsStringAsync().Result;
+                JArray jsonData = JArray.Parse(content);
+                return jsonData;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return new JArray();
+            }
         }
 
     }

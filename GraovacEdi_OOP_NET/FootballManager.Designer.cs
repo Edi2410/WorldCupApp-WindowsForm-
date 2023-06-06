@@ -238,6 +238,7 @@
             Controls.Add(pPlayers);
             MainMenuStrip = menuStrip1;
             Name = "FootballManager";
+            FormClosing += FootballManager_FormClosing;
             Load += FootballManager_Load;
             tlpFavoriteTeam.ResumeLayout(false);
             tlpFavoriteTeam.PerformLayout();
