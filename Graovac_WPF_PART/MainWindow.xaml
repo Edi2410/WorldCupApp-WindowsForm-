@@ -5,16 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Graovac_WPF_PART"
         mc:Ignorable="d"
+        Closing="Window_Closing"
         Title="World Cup app" 
         Width="400"
         Height="400"
         Background="MediumPurple"
         WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="ButtonAnimation" TargetType="Button">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Button.Click">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1.0" To="0.0" Duration="0:0:0.5" AutoReverse="True" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid >
         <Grid.RowDefinitions>
-            <RowDefinition Height="13*" />
-            <RowDefinition Height="19*"/>
-            <RowDefinition Height="32*"/>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -22,10 +35,44 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ComboBox x:Name="cbTeam1" HorizontalAlignment="Left" Margin="3,44,0,0" VerticalAlignment="Top" Width="120" Height="22"/>
-        <Label Content="Ekipa 1" HorizontalAlignment="Left" Margin="3,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.058,-0.045" Height="26" Width="48"/>
+        <ComboBox x:Name="cbTeam1" HorizontalAlignment="Center" Margin="3,44,0,0" VerticalAlignment="Top" Width="120" Height="22" SelectionChanged="cbTeam1_SelectionChanged"/>
+        <Label Content="Ekipa 1" HorizontalAlignment="Center" Margin="3,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.058,-0.045" Height="26" Width="48"/>
         <ComboBox x:Name="cbTeam2" Grid.Column="2" HorizontalAlignment="Center" Margin="0,44,0,0" VerticalAlignment="Top" Width="120" Height="22" SelectionChanged="cbTeam2_SelectionChanged"/>
-        <Label Grid.Column="2" Content="Ekipa 2&#xD;&#xA;" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Height="42" Width="48"/>
-        <Label x:Name="lbResults" Grid.Column="1" Content="0 : 0" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="36"/>
+        <Label Grid.Column="2" Content="Ekipa 2&#xD;&#xA;" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Height="42" Width="48"/>
+        <Label x:Name="lbResults" Grid.Column="1" Content="0 : 0" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="36" Height="58" Width="82"/>
+        <Button x:Name="btnTeam1Details" Content="Detalji ekipe 1" HorizontalAlignment="Center" Margin="3,76,0,0" VerticalAlignment="Top" Click="Button_Click" Foreground="Black" Width="120" Style="{StaticResource ButtonAnimation}"/>
+        <Button x:Name="btnTeam2Details" Grid.Column="2" Content="Detalji ekipe 2" HorizontalAlignment="Center" Margin="0,76,0,0" VerticalAlignment="Top" Width="120" Click="btnTeam2Details_Click" IsEnabled="False" Style="{StaticResource ButtonAnimation}"/>
+        <Image x:Name="photoTeren" RenderTransformOrigin="0.592,1.684" Grid.Row="1" Grid.ColumnSpan="3" Source="/teren.png"/>
+        <Button x:Name="tbSaveSettings" Grid.Column="1" Content="Spremi postavke" HorizontalAlignment="Center" Margin="0,108,0,0" VerticalAlignment="Center" Width="114" Click="tbSaveSettings_Click"/>
+        <DockPanel LastChildFill="False" Grid.ColumnSpan="3" Margin="10,10,10,10" Grid.Row="1"/>
+        <Grid x:Name="homeTeamGrid" Grid.Column="0" Margin="19,10,78,10" Grid.Row="1" Grid.ColumnSpan="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel x:Name="homeGoalie" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <StackPanel x:Name="homeDefender" Grid.Column="1"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <StackPanel x:Name="homeMidfield" Grid.Column="2"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <StackPanel x:Name="homeForward" Grid.Column="3"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
+        <Grid x:Name="awayTeamGrid" Grid.Column="1" Margin="79,10,19,10" Grid.Row="1" Grid.ColumnSpan="2" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel x:Name="awayForward"  VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,118,0,0"/>
+            <StackPanel x:Name="awayMidfield" Grid.Column="1"  VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,118,0,0"/>
+            <StackPanel x:Name="awayDefender" Grid.Column="2"  VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,118,0,0"/>
+            <StackPanel x:Name="awayGoalie" Grid.Column="3"  VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,118,0,0"/>
+        </Grid>
+
+
     </Grid>
+
 </Window>
+    
+    

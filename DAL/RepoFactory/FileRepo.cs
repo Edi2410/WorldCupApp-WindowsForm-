@@ -58,7 +58,14 @@ namespace DAL.RepoFactory
                     team.Value<string>("alternate_name"),
                     team.Value<string>("fifa_code"),
                     team.Value<int>("group_id"),
-                    team.Value<string>("group_letter")[0]
+                    team.Value<string>("group_letter")[0],
+                    team.Value<int>("games_played"),
+                    team.Value<int>("wins"),
+                    team.Value<int>("draws"),
+                    team.Value<int>("losses"),
+                    team.Value<int>("goals_for"),
+                    team.Value<int>("goals_against"),
+                    team.Value<int>("goal_differential")
                 ));
             }
         
@@ -107,6 +114,65 @@ namespace DAL.RepoFactory
             return listPlayersData;
         }
 
+
+        public List<Player> GetPlayersPositions(NationalTeam homeTeam, NationalTeam awayTeam)
+        {
+            JArray jsonPlayerData = new JArray();
+            List<Player> listPlayersData = new List<Player>();
+
+            if (GetWorldCup() == "Musko")
+            {
+                jsonPlayerData = FatchData($"https://worldcup-vua.nullbit.hr/men/matches/country?fifa_code={homeTeam.FifaCode}");
+            }
+            else
+            {
+                jsonPlayerData = FatchData($"https://worldcup-vua.nullbit.hr/women/matches/country?fifa_code={homeTeam.FifaCode}");
+            }
+
+            JArray startElevenHome = new JArray();
+            JArray startElevenAway = new JArray();
+
+            foreach (var match in jsonPlayerData)
+            {
+                if((match["home_team"]).Value<string>("code") == homeTeam.FifaCode && (match["away_team"]).Value<string>("code") == awayTeam.FifaCode)
+                {
+                    startElevenHome = (JArray?)match["home_team_statistics"]["starting_eleven"];
+                    startElevenAway = (JArray?)match["away_team_statistics"]["starting_eleven"];
+                }
+                if ((match["away_team"]).Value<string>("code") == homeTeam.FifaCode && (match["home_team"]).Value<string>("code") == awayTeam.FifaCode)
+                {
+                    startElevenHome = (JArray?)match["away_team_statistics"]["starting_eleven"];
+                    startElevenAway = (JArray?)match["home_team_statistics"]["starting_eleven"];
+                }
+            }
+
+            foreach (var player in startElevenHome)
+            {
+                listPlayersData.Add(new Player(
+                       player.Value<string>("name"),
+                       player.Value<bool>("captain"),
+                       player.Value<int>("shirt_number"),
+                       player.Value<string>("position"),
+                       false,
+                       homeTeam.FifaCode
+                ));
+            }
+            foreach (var player in startElevenAway)
+            {
+                listPlayersData.Add(new Player(
+                       player.Value<string>("name"),
+                       player.Value<bool>("captain"),
+                       player.Value<int>("shirt_number"),
+                       player.Value<string>("position"),
+                       false,
+                       awayTeam.FifaCode
+                ));
+            }
+
+            return listPlayersData;
+
+        }
+
         public List<Event> GetPlayerStatsData()
         {
             JArray jsonStatsData = new JArray();
@@ -136,7 +202,7 @@ namespace DAL.RepoFactory
             return eventList;
         }
 
-        public List<NationalTeam> GetEnemyTeams()
+        public List<NationalTeam> GetEnemyTeams(NationalTeam homeTeam)
         {
             JArray jsonMatchData = new JArray();
             JArray jsonNationalsTeamsData = new JArray();
@@ -145,18 +211,18 @@ namespace DAL.RepoFactory
 
             if (GetWorldCup() == "Musko")
             {
-                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/men/matches/country?fifa_code={GetFifaCode()}");
+                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/men/matches/country?fifa_code={homeTeam.FifaCode}");
                 jsonNationalsTeamsData = FatchData("https://worldcup-vua.nullbit.hr/men/teams/results");
             }
             else
             {
-                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/women/matches/country?fifa_code={GetFifaCode()}");
+                jsonMatchData = FatchData($"https://worldcup-vua.nullbit.hr/women/matches/country?fifa_code={homeTeam.FifaCode}");
                 jsonNationalsTeamsData = FatchData("https://worldcup-vua.nullbit.hr/women/teams/results");
             }
 
             foreach (var match in jsonMatchData)
             {
-                if ((match["home_team"]).Value<string>("code") == GetFifaCode())
+                if ((match["home_team"]).Value<string>("code") == homeTeam.FifaCode)
                 {
                     codeList.Add((match["away_team"]).Value<string>("code"));
                 }
@@ -171,13 +237,20 @@ namespace DAL.RepoFactory
                 if (codeList.Contains(nationalteam.Value<String>("fifa_code")))
                 {
                     enemyTeamsList.Add(new NationalTeam(
-                        nationalteam.Value<int>("id"),
-                        nationalteam.Value<string>("country"),
-                        nationalteam.Value<string>("alternate_name"),
-                        nationalteam.Value<string>("fifa_code"),
-                        nationalteam.Value<int>("group_id"),
-                        nationalteam.Value<string>("group_letter")[0]
-                        ));
+                    nationalteam.Value<int>("id"),
+                    nationalteam.Value<string>("country"),
+                    nationalteam.Value<string>("alternate_name"),
+                    nationalteam.Value<string>("fifa_code"),
+                    nationalteam.Value<int>("group_id"),
+                    nationalteam.Value<string>("group_letter")[0],
+                    nationalteam.Value<int>("games_played"),
+                    nationalteam.Value<int>("wins"),
+                    nationalteam.Value<int>("draws"),
+                    nationalteam.Value<int>("losses"),
+                    nationalteam.Value<int>("goals_for"),
+                    nationalteam.Value<int>("goals_against"),
+                    nationalteam.Value<int>("goal_differential")
+                ));
                 }
             }
 
@@ -211,6 +284,36 @@ namespace DAL.RepoFactory
             }
 
             return listVisitorsStats.OrderByDescending(visitor => visitor.VisitorNumber).ToList();
+        }
+
+        public List<Event> GetPlayerStats(string fifaCode)
+        {
+            JArray jsonStatsData = new JArray();
+            List<Event> eventList = new List<Event>();
+
+
+            if (GetWorldCup() == "Musko")
+            {
+                jsonStatsData = FatchData($"https://worldcup-vua.nullbit.hr/men/matches/country?fifa_code={fifaCode}");
+            }
+            else
+            {
+                jsonStatsData = FatchData($"https://worldcup-vua.nullbit.hr/women/matches/country?fifa_code={fifaCode}");
+            }
+
+            foreach (var match in jsonStatsData)
+            {
+                if ((match["home_team"]).Value<string>("code") == fifaCode)
+                {
+                    eventList = ValidEvent((JArray)match["home_team_events"]);
+                }
+                else
+                {
+                    eventList = ValidEvent((JArray)match["away_team_events"]);
+                }
+            }
+
+            return eventList;
         }
 
         public string GetResults(NationalTeam homeTeam, NationalTeam awayTeam)
@@ -405,6 +508,11 @@ namespace DAL.RepoFactory
                 MessageBox.Show("Ne možemo pronaći datoteku ponovo pokrenite aplikaciju", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return 0;
             }
+        }
+
+        public void GetPlayersPositions()
+        {
+            throw new NotImplementedException();
         }
 
 
